@@ -2,9 +2,9 @@ import jwt
 
 from datetime import datetime, timedelta
 
-from django.conf import settings 
+from django.conf import settings
 from django.contrib.auth.models import (
-	AbstractBaseUser, BaseUserManager, PermissionsMixin, AbstractUser
+    AbstractBaseUser, BaseUserManager, PermissionsMixin
 )
 
 from django.db import models
@@ -14,7 +14,8 @@ class UserManager(BaseUserManager):
     """
     Django требует, чтобы кастомные пользователи определяли свой собственный
     класс Manager. Унаследовавшись от BaseUserManager, мы получаем много того
-    же самого кода, который Django использовал для создания User (для демонстрации).
+    же самого кода, который Django использовал для создания User
+    (для демонстрации).
     """
 
     def create_user(self, username, email, password=None):
@@ -42,6 +43,7 @@ class UserManager(BaseUserManager):
 
         return user
 
+
 class User(AbstractBaseUser, PermissionsMixin):
     username = models.CharField(db_index=True, max_length=255, unique=True)
     email = models.EmailField(db_index=True, unique=True)
@@ -49,8 +51,8 @@ class User(AbstractBaseUser, PermissionsMixin):
     is_staff = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    role = models.TextField('Роль',blank=True)
-    bio = models.TextField('Биография',blank=True)
+    role = models.TextField('Роль', blank=True)
+    bio = models.TextField('Биография', blank=True)
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['username']
 
