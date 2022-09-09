@@ -1,17 +1,5 @@
-from django.contrib.auth.models import AbstractUser
 from django.db import models
-
-
-class User(AbstractUser):
-    email = models.EmailField(max_length=254, unique=True)
-    role = models.TextField(
-        'Роль',
-        blank=True,
-    )
-    bio = models.TextField(
-        'Биография',
-        blank=True,
-    )
+from users.models import User
 
 
 SCORE_FOR_REVIEW = (
