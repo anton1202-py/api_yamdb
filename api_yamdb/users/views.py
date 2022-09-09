@@ -1,20 +1,24 @@
-from asyncio import run_coroutine_threadsafe
-from lib2to3.pgen2 import token
-from smtplib import SMTPResponseException
-from urllib import response
-
-from django.conf import settings
-from django.contrib.auth.tokens import default_token_generator
-from django.core.mail import send_mail
-from django.shortcuts import get_object_or_404, render
 from rest_framework import response, status, viewsets
+from rest_framework.permissions import AllowAny
+from rest_framework.response import Response
+from rest_framework.views import APIView
+from django.shortcuts import get_object_or_404, render
+from django.core.mail import send_mail
+from django.conf import settings
 from rest_framework.decorators import api_view
-# from rest_framework_simplejwt import RefreshToken
+from smtplib import SMTPResponseException
+from django.contrib.auth.tokens import default_token_generator
 
 from users.models import User
-from users.serializers import ConfirmationCodeSerializer, UserSignupSerializer, UserSerializer
+from users.serializers import RegistrationSerializer, UserSerializer, AuthentificationSerializer
 
-# # Create your views here.
+
+class RegistrationAPIView(viewsets.ModelViewSet):
+    queryset = User.objects.all()
+    serializer_class = RegistrationSerializer
+
+
+
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
@@ -23,7 +27,7 @@ class UserViewSet(viewsets.ModelViewSet):
 
 @api_view(['POST'])
 def signup_view(request):
-    serializer = UserSignupSerializer(data=request.data)
+    serializer = RegistrationSerializer(data=request.data)
     serializer.is_valid(raise_exception=True)
     username = serializer.validated_data.get('username')
     if username == 'me':
@@ -67,20 +71,21 @@ def signup_view(request):
         
 @api_view(['POST'])
 def confirmation_view(request):
-    serializer = ConfirmationCodeSerializer(data=request.data)
-    serializer.is_valid()
+    serializer = AuthentificationSerializer(data=request.data)
+    serializer.is_valid(raise_exception=True)
     code = serializer.validated_data.get('confirmation_code')
     username = serializer.validated_data.get('username')
+    print(username)
     user = get_object_or_404(User, username=username)
+    print('found')
     if not default_token_generator.check_token(user, code):
         resp = response.Response(
             data = {'error':'некорректный токен'},
             status=status.HTTP_400_BAD_REQUEST
         )
-#     token = RefreshToken.for_user(user)
-    token = 123
+    token = user.token
     resp = response.Response(
-            data = {'access':str(token)},
+            data = {'access':str(token)},   
             status=status.HTTP_200_OK
         )
     return resp
