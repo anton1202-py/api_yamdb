@@ -1,13 +1,7 @@
-import jwt
-
-from datetime import datetime, timedelta
-
-from django.conf import settings
-from django.contrib.auth.models import (
-    AbstractBaseUser, BaseUserManager, PermissionsMixin
-)
-
+from django.contrib.auth.models import (AbstractBaseUser, BaseUserManager,
+                                        PermissionsMixin)
 from django.db import models
+from rest_framework_simplejwt.tokens import RefreshToken
 
 
 class UserManager(BaseUserManager):
@@ -34,7 +28,12 @@ class UserManager(BaseUserManager):
 
         return user
 
-    def create_superuser(self, username, email, password, role, bio):
+    def create_superuser(self,
+                         username,
+                         email,
+                         password,
+                         role='admin',
+                         bio=''):
         """ Создает и возввращет пользователя с привилегиями суперадмина. """
         if password is None:
             raise TypeError('Superusers must have a password.')
@@ -54,8 +53,10 @@ class User(AbstractBaseUser, PermissionsMixin):
     is_staff = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    role = models.TextField('Роль', blank=True)
-    bio = models.TextField('Биография', blank=True)
+    first_name = models.CharField(max_length=255, default='')
+    last_name = models.CharField(max_length=255, default='')
+    role = models.TextField('Роль', blank=True, default='user')
+    bio = models.TextField('Биография', blank=True, default='')
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['username']
 
@@ -63,7 +64,7 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     def __str__(self):
         """ Строковое представление модели (отображается в консоли) """
-        return self.email
+        return self.username
 
     @property
     def token(self):
@@ -91,11 +92,6 @@ class User(AbstractBaseUser, PermissionsMixin):
         Генерирует веб-токен JSON, в котором хранится идентификатор этого
         пользователя, срок действия токена составляет 1 день от создания
         """
-        dt = datetime.now() + timedelta(days=1)
-
-        token = jwt.encode({
-            'id': self.pk,
-            'exp': int(dt.strftime('%s'))
-        }, settings.SECRET_KEY, algorithm='HS256')
+        token = RefreshToken.for_user(self).access_token
 
         return token
