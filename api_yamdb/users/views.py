@@ -31,13 +31,16 @@ def signup_view(request):
     serializer = RegistrationSerializer(data=request.data)
     serializer.is_valid(raise_exception=True)
     username = serializer.validated_data.get('username')
-    if username == 'me':
-        resp = response.Response(
+    print(username)
+    if (username == 'me'):
+        print(123)
+        return response.Response(
             data={
                 'error': "Нельзя использовать me в качестве имени"
             },
             status=status.HTTP_400_BAD_REQUEST
         )
+
     email = serializer.validated_data.get('email')
     user, created = User.objects.get_or_create(username=username,
                                                email=email)
@@ -80,7 +83,8 @@ def confirmation_view(request):
     username = serializer.validated_data.get('username')
     user = get_object_or_404(User, username=username)
     if not default_token_generator.check_token(user, code):
-        resp = response.Response(
+        print(user)
+        return response.Response(
             data={'error': 'некорректный токен'},
             status=status.HTTP_400_BAD_REQUEST
         )

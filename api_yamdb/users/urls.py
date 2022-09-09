@@ -9,8 +9,7 @@ router_v1 = DefaultRouter()
 router_v1.register('users', UserViewSet)
 
 urlpatterns = [
-    path('signup/', signup_view),
-    path('token/', confirmation_view),
-    path('me/', confirmation_view),
-    path('v1/', include(router_v1.urls)),
+    path('auth/signup/', signup_view),
+    path('auth/token/', confirmation_view),
+    path('', include(router_v1.urls)),
 ]
