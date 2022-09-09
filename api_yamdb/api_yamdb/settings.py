@@ -21,8 +21,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'users'
     'reviews',
-    'api',
+    'api'
 ]
 
 MIDDLEWARE = [
@@ -66,6 +67,7 @@ DATABASES = {
     }
 }
 
+AUTH_USER_MODEL = 'users.User'
 
 # Password validation
 
@@ -110,7 +112,10 @@ USE_I18N = True
 USE_L10N = True
 
 USE_TZ = True
-
+MAILING_EMAIL = 'uamdb@ya.ru'
+EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
+EMAIL_FILE_PATH = os.path.join(BASE_DIR, 'sent_emails') 
+AUTH_USER_MODEL = 'users.User'
 
 # Static files (CSS, JavaScript, Images)
 
