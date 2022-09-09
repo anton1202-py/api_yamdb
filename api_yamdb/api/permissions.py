@@ -10,6 +10,7 @@ class IsOwnerOrReadOnly(permissions.BasePermission):
             return True
         return obj.author == request.user
 
+
 class IsAuthorStaffOrReadOnly(permissions.BasePermission):
     """Permission на уровне объекта, чтобы разрешить редактирование
     только автору объекта, модератору или админимтратору."""
@@ -21,3 +22,11 @@ class IsAuthorStaffOrReadOnly(permissions.BasePermission):
             or obj.author == request.user
             or request.user.is_admin
             or request.user.is_moderator)
+
+
+class GeneralPrmission(permissions.BasePermission):
+
+    def has_permission(self, request, view):
+        return bool(request.user.is_authenticated
+                    and request.user.is_staff
+                    or request.method in permissions.SAFE_METHODS)

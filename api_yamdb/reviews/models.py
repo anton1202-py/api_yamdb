@@ -1,6 +1,5 @@
-from django.contrib.auth import get_user_model
-from django.db import models
 from django.contrib.auth.models import AbstractUser
+from django.db import models
 
 
 class User(AbstractUser):
@@ -14,6 +13,15 @@ class User(AbstractUser):
         blank=True,
     )
 
+
+SCORE_FOR_REVIEW = (
+    (1, 1), (6, 6),
+    (2, 2), (7, 7),
+    (3, 3), (8, 8),
+    (4, 4), (9, 9),
+    (5, 5), (10, 10))
+
+
 class Category(models.Model):
     name = models.CharField(max_length=30, verbose_name='name')
     slug = models.SlugField(unique=True, verbose_name='slug')
@@ -24,6 +32,7 @@ class Category(models.Model):
     class Meta:
         verbose_name = 'Category'
         verbose_name_plural = 'Categorys'
+
 
 class Genre(models.Model):
     name = models.CharField(max_length=30, verbose_name='name')
@@ -36,8 +45,9 @@ class Genre(models.Model):
         verbose_name = 'Genre'
         verbose_name_plural = 'Genres'
 
+
 class Title(models.Model):
-    name = models.TextField(max_length=50)
+    name = models.TextField(max_length=50, verbose_name='name')
     year = models.IntegerField('Год создания')
     description = models.TextField(max_length=200, null=True, blank=True)
     genre = models.ManyToManyField(Genre)
@@ -52,7 +62,6 @@ class Title(models.Model):
         verbose_name = 'Title'
         verbose_name_plural = 'Titles'
 
-SCORE_FOR_REVIEW = ((1, 1), (2, 2), (3, 3), (4, 4), (5, 5), (6, 6), (7, 7), (8, 8), (9, 9), (10, 10))
 
 class Review(models.Model):
     title = models.ForeignKey(
