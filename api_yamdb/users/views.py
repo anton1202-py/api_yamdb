@@ -31,9 +31,7 @@ def signup_view(request):
     serializer = RegistrationSerializer(data=request.data)
     serializer.is_valid(raise_exception=True)
     username = serializer.validated_data.get('username')
-    print(username)
     if (username == 'me'):
-        print(123)
         return response.Response(
             data={
                 'error': "Нельзя использовать me в качестве имени"
@@ -46,7 +44,7 @@ def signup_view(request):
                                                email=email)
 
     if not created:
-        resp = response.Response(
+        return response.Response(
             data={
                 'error': "Пользователь с таким именем или эмейлом существует"
             },
@@ -83,7 +81,6 @@ def confirmation_view(request):
     username = serializer.validated_data.get('username')
     user = get_object_or_404(User, username=username)
     if not default_token_generator.check_token(user, code):
-        print(user)
         return response.Response(
             data={'error': 'некорректный токен'},
             status=status.HTTP_400_BAD_REQUEST
@@ -113,7 +110,7 @@ class UserViewSet(viewsets.ModelViewSet):
                 request.user, data=request.data, partial=True
             )
             serializer.is_valid(raise_exception=True)
-            serializer.save(role=request.user.role)
+            serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
         serializer = UserSerializer(request.user)
         return Response(serializer.data, status=status.HTTP_200_OK)
