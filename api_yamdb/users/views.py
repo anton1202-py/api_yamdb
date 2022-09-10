@@ -6,12 +6,12 @@ from django.core.mail import send_mail
 from django.shortcuts import get_object_or_404
 from rest_framework import response, status, viewsets
 from rest_framework.decorators import action, api_view, permission_classes
-from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
+from rest_framework.response import Response
 
 from users.models import User
-from users.permissions import IsAdminOrStaffPermission, IsUserForSelfPermission
-from users.serializers import (AuthentificationSerializer,
+from users.permissions import AdminPermissions, UserHimselfPermissions
+from users.serializers import (AdminUserSerializer, AuthentificationSerializer,
                                RegistrationSerializer, UserSerializer)
 
 
@@ -98,15 +98,14 @@ def confirmation_view(request):
 
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
-    serializer_class = UserSerializer
-    permission_classes = (IsAdminOrStaffPermission,)
-    search_fields = ('=username',)
+    serializer_class = AdminUserSerializer
+    permission_classes = (AdminPermissions,)
     lookup_field = 'username'
 
     @action(
         detail=False,
         methods=['GET', 'PATCH'],
-        permission_classes=(IsUserForSelfPermission,)
+        permission_classes=(UserHimselfPermissions,)
     )
     def me(self, request):
         if request.method == 'PATCH':

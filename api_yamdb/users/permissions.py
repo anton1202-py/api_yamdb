@@ -1,18 +1,15 @@
 from rest_framework import permissions
 
 
-class IsUserForSelfPermission(permissions.BasePermission):
+class UserHimselfPermissions(permissions.BasePermission):
 
     def has_permission(self, request, view):
         return request.user.is_authenticated
 
 
-class IsAdminOrStaffPermission(permissions.BasePermission):
+class AdminPermissions(permissions.BasePermission):
 
     def has_permission(self, request, view):
-        return (
-            request.user.is_staff
-            or (
-                request.user.is_authenticated
-                and (request.user.role == 'admin'))
-        )
+        return (request.user.is_staff
+                or (request.user.is_authenticated
+                    and request.user.role == 'admin'))

@@ -4,6 +4,13 @@ from django.db import models
 from rest_framework_simplejwt.tokens import RefreshToken
 
 
+USER_ROLES = (
+    'user',
+    'moderator',
+    'admin'
+)
+
+
 class UserManager(BaseUserManager):
     """
     Django требует, чтобы кастомные пользователи определяли свой собственный
@@ -55,7 +62,11 @@ class User(AbstractBaseUser, PermissionsMixin):
     updated_at = models.DateTimeField(auto_now=True)
     first_name = models.CharField(max_length=255, default='')
     last_name = models.CharField(max_length=255, default='')
-    role = models.TextField('Роль', blank=True, default='user')
+    role = models.CharField('Роль',
+                            max_length=255,
+                            blank=True,
+                            default='user',
+                            choices=USER_ROLES)
     bio = models.TextField('Биография', blank=True, default='')
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['username']
