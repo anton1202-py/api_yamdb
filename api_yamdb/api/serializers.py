@@ -49,7 +49,7 @@ class ReviewSerializer(serializers.ModelSerializer):
         validators = (
             UniqueTogetherValidator(
                 queryset=Review.objects.all(),
-                fields=('title', 'author', 'score', 'pub_date', 'text'),
+                fields=('title', 'author'),
                 message='Невозможно сделать два отзыва к оджному произведнию'
             ),
         )

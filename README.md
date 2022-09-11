@@ -81,11 +81,3 @@ GET http://127.0.0.1:8000/api/v1/users/ - Получение списка все
 POST http://127.0.0.1:8000/api/v1/users/ - Добавление пользователя  
   
 GET http://127.0.0.1:8000/api/v1/users/{username}/ - Получение пользователя по username  
-  
-PATCH http://127.0.0.1:8000/api/v1/users/{username}/ - Изменение данных пользователя по username  
-  
-DEL http://127.0.0.1:8000/api/v1/users/{username}/ - Удаление пользователя по username  
-  
-GET http://127.0.0.1:8000/api/v1/users/me/ - Получение данных своей учетной записи  
-  
-PATCH http://127.0.0.1:8000/api/v1/users/me/ - Изменение данных своей учетной записи  
