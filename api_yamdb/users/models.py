@@ -1,13 +1,14 @@
 from django.contrib.auth.models import (AbstractBaseUser, BaseUserManager,
                                         PermissionsMixin)
 from django.db import models
+from django.contrib.auth.hashers import make_password
 from rest_framework_simplejwt.tokens import RefreshToken
 
 
 USER_ROLES = (
-    'user',
-    'moderator',
-    'admin'
+    ('user', 'Пользователь'),
+    ('moderator', 'Модератор'),
+    ('admin', 'Администратор'),
 )
 
 
@@ -18,11 +19,11 @@ class UserManager(BaseUserManager):
 
         if email is None:
             raise TypeError('Users must have an email address.')
-
         user = self.model(username=username,
                           email=self.normalize_email(email),
                           role=role,
                           bio=bio)
+        user.set_unusable_password()
         user.save()
 
         return user
@@ -35,8 +36,12 @@ class UserManager(BaseUserManager):
                          bio=''):
         if password is None:
             raise TypeError('Superusers must have a password.')
-
-        user = self.create_user(username, email, password, role, bio)
+        print(password)
+        user = self.create_user(username=username,
+                                email=email,
+                                role=role,
+                                bio=bio)
+        user.password = make_password(password)
         user.is_superuser = True
         user.is_staff = True
         user.save()
@@ -46,7 +51,7 @@ class UserManager(BaseUserManager):
 
 class User(AbstractBaseUser, PermissionsMixin):
     username = models.CharField(db_index=True, max_length=255, unique=True)
-    email = models.EmailField(db_index=True, unique=True)
+    email = models.EmailField(unique=True)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -59,8 +64,8 @@ class User(AbstractBaseUser, PermissionsMixin):
                             default='user',
                             choices=USER_ROLES)
     bio = models.TextField('О себе', blank=True, default='')
-    USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['username']
+    USERNAME_FIELD = 'username'
+    REQUIRED_FIELDS = ['email']
 
     objects = UserManager()
 
