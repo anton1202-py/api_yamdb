@@ -1,10 +1,7 @@
 from rest_framework import serializers
-
-from rest_framework.validators import UniqueTogetherValidator
 from rest_framework.relations import SlugRelatedField
-
-from reviews.models import Comment, Review
-from reviews.models import Category, Genre, Title
+from rest_framework.validators import UniqueTogetherValidator
+from reviews.models import Category, Comment, Genre, Review, Title
 
 
 class CategoriesSerializer(serializers.ModelSerializer):
@@ -46,13 +43,16 @@ class ReviewSerializer(serializers.ModelSerializer):
     class Meta:
         fields = '__all__'
         model = Review
-        validators = (
-            UniqueTogetherValidator(
-                queryset=Review.objects.all(),
-                fields=('title', 'author', 'score', 'pub_date', 'text'),
-                message='Невозможно сделать два отзыва к оджному произведнию'
-            ),
-        )
+        read_only_fields = ('id',
+                            'author',
+                            'pub_date',
+                            'title')
+        # validators = (
+        #     UniqueTogetherValidator(
+        #         queryset=Review.objects.all(),
+        #         fields=('author', 'title'),
+        #         message='Невозможно сделать два отзыва к оджному произведнию'
+        #     ),)
 
 
 class CommentSerializer(serializers.ModelSerializer):
