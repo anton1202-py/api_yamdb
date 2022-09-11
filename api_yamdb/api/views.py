@@ -6,7 +6,7 @@ from rest_framework.response import Response
 from reviews.models import Category, Genre, Review, Title
 
 from .filters import ModelFilter
-from .permissions import GeneralPrmission, IsAuthorStaffOrReadOnly
+from .permissions import AdminModerator, GeneralPrmission
 from .serializers import (CategoriesSerializer, CommentSerializer,
                           GenreSerializer, ReviewSerializer,
                           TitleGeneralSerializer, TitleSlugSerializer)
@@ -15,7 +15,7 @@ from .serializers import (CategoriesSerializer, CommentSerializer,
 class ReviewViewSet(viewsets.ModelViewSet):
     queryset = Review.objects.all()
     serializer_class = ReviewSerializer
-    permission_classes = (IsAuthorStaffOrReadOnly,)
+    permission_classes = (AdminModerator,)
 
     def get_queryset(self):
         title_id = self.kwargs.get('title_id')
@@ -30,7 +30,7 @@ class ReviewViewSet(viewsets.ModelViewSet):
 
 class CommentViewSet(viewsets.ModelViewSet):
     serializer_class = CommentSerializer
-    permission_classes = (IsAuthorStaffOrReadOnly,)
+    permission_classes = (AdminModerator,)
 
     def get_queryset(self):
         review_id = self.kwargs.get('review_id')

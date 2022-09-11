@@ -43,12 +43,12 @@ class Title(models.Model):
                                  on_delete=models.SET_NULL,
                                  related_name='titles', null=True, blank=True)
 
-    def __str__(self):
-        return self.name
-
     class Meta:
         verbose_name = 'Title'
         verbose_name_plural = 'Titles'
+
+    def __str__(self):
+        return self.name
 
 
 class Review(models.Model):
@@ -82,7 +82,11 @@ class Comment(models.Model):
         help_text='Напишите комментарий'
     )
     review = models.ForeignKey(
-        Review, on_delete=models.CASCADE, related_name='comments')
+        Review,
+        blank=True, null=True,
+        on_delete=models.CASCADE,
+        related_name='comments'
+    )
     author = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name='comments')
     pub_date = models.DateTimeField(
