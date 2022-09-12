@@ -48,7 +48,6 @@ class GenreViewSet(viewsets.ModelViewSet):
     lookup_field = 'slug'
     serializer_class = GenreSerializer
     permission_classes = [GeneralPrmission]
-
     filter_backends = [filters.SearchFilter]
     search_fields = ('name',)
 
@@ -76,7 +75,7 @@ class CategoriesViewSet(viewsets.ModelViewSet):
 
 
 class TitleViewSet(viewsets.ModelViewSet):
-    filter_backends = [DjangoFilterBackend]
+    filter_backends = (DjangoFilterBackend,)
     filter_class = ModelFilter
     permission_classes = [GeneralPrmission]
 
@@ -87,3 +86,4 @@ class TitleViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         return Title.objects.all().annotate(rating=Avg('reviews__score'))
+    
