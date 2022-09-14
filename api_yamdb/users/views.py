@@ -6,18 +6,13 @@ from django.core.mail import send_mail
 from django.shortcuts import get_object_or_404
 from rest_framework import response, status, viewsets
 from rest_framework.decorators import action, api_view, permission_classes
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 
 from users.models import User
-from users.permissions import AdminPermissions, UserHimselfPermissions
+from users.permissions import AdminPermissions
 from users.serializers import (AdminUserSerializer, AuthentificationSerializer,
                                RegistrationSerializer, UserSerializer)
-
-
-class RegistrationAPIView(viewsets.ModelViewSet):
-    queryset = User.objects.all()
-    serializer_class = RegistrationSerializer
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -50,11 +45,11 @@ def signup_view(request):
             },
             status=status.HTTP_400_BAD_REQUEST
         )
-    token = default_token_generator.make_token(user)
+    code = default_token_generator.make_token(user)
     try:
         send_mail(
             'Token',
-            f'{token}',
+            f'{code}',
             f'{settings.MAILING_EMAIL}',
             [email]
         )
@@ -64,9 +59,7 @@ def signup_view(request):
         )
     except SMTPResponseException:
         resp = response.Response(
-            data={
-                'error': "Не получилось отправить эмейл"
-            },
+            data={'error': "Не получилось отправить эмейл"},
             status=status.HTTP_500_INTERNAL_SERVER_ERROR
         )
     return resp
@@ -82,7 +75,7 @@ def confirmation_view(request):
     user = get_object_or_404(User, username=username)
     if not default_token_generator.check_token(user, code):
         return response.Response(
-            data={'error': 'некорректный токен'},
+            data={'error': 'некорректный код подтверждения'},
             status=status.HTTP_400_BAD_REQUEST
         )
     token = user.token
@@ -102,7 +95,7 @@ class UserViewSet(viewsets.ModelViewSet):
     @action(
         detail=False,
         methods=['GET', 'PATCH'],
-        permission_classes=(UserHimselfPermissions,)
+        permission_classes=(IsAuthenticated,)
     )
     def me(self, request):
         if request.method == 'PATCH':
