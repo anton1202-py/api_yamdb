@@ -33,8 +33,8 @@ def signup_view(request):
         serializer.is_valid(raise_exception=True)
         username = serializer.validated_data.get('username')
         email = serializer.validated_data.get('email')
-        user, created = User.objects.get_or_create(username=username,
-                                                   email=email)
+        user, _ = User.objects.get_or_create(username=username,
+                                             email=email)
     code = default_token_generator.make_token(user)
     try:
         send_mail(
