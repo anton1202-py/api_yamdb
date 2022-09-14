@@ -23,28 +23,18 @@ class UserViewSet(viewsets.ModelViewSet):
 @api_view(['POST'])
 @permission_classes([AllowAny])
 def signup_view(request):
+    username = request.data.get('username')
+    email = request.data.get('email')
     serializer = RegistrationSerializer(data=request.data)
-    serializer.is_valid(raise_exception=True)
-    username = serializer.validated_data.get('username')
-    if (username == 'me'):
-        return response.Response(
-            data={
-                'error': "Нельзя использовать me в качестве имени"
-            },
-            status=status.HTTP_400_BAD_REQUEST
-        )
-
-    email = serializer.validated_data.get('email')
-    user, created = User.objects.get_or_create(username=username,
-                                               email=email)
-
-    if not created:
-        return response.Response(
-            data={
-                'error': "Пользователь с таким именем или эмейлом существует"
-            },
-            status=status.HTTP_400_BAD_REQUEST
-        )
+    if User.objects.filter(username=username, email=email).exists():
+        user = User.objects.get(username=username, email=email)
+        serializer.is_valid(raise_exception=False)
+    else:
+        serializer.is_valid(raise_exception=True)
+        username = serializer.validated_data.get('username')
+        email = serializer.validated_data.get('email')
+        user, created = User.objects.get_or_create(username=username,
+                                                   email=email)
     code = default_token_generator.make_token(user)
     try:
         send_mail(
@@ -98,12 +88,12 @@ class UserViewSet(viewsets.ModelViewSet):
         permission_classes=(IsAuthenticated,)
     )
     def me(self, request):
-        if request.method == 'PATCH':
-            serializer = UserSerializer(
-                request.user, data=request.data, partial=True
-            )
-            serializer.is_valid(raise_exception=True)
-            serializer.save()
+        if request.method == 'GET':
+            serializer = UserSerializer(request.user)
             return Response(serializer.data, status=status.HTTP_200_OK)
-        serializer = UserSerializer(request.user)
+        serializer = UserSerializer(
+            request.user, data=request.data, partial=True
+        )
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
         return Response(serializer.data, status=status.HTTP_200_OK)

@@ -38,3 +38,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     @property
     def token(self):
         return RefreshToken.for_user(self).access_token
+
+    @property
+    def is_admin(self):
+        return self.role == 'admin'

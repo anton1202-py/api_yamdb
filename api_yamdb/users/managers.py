@@ -3,12 +3,7 @@ from django.contrib.auth.models import BaseUserManager
 
 
 class UserManager(BaseUserManager):
-    def create_user(self,
-                    username,
-                    email,
-                    role,
-                    bio,
-                    password=None):
+    def create_user(self, username, email, role, bio, password=None):
         if username is None:
             raise TypeError('Users must have a username.')
 
@@ -23,11 +18,7 @@ class UserManager(BaseUserManager):
 
         return user
 
-    def create_superuser(self,
-                         username,
-                         email,
-                         password,
-                         role='admin',
+    def create_superuser(self, username, email, password, role='admin',
                          bio=''):
         if password is None:
             raise TypeError('Superusers must have a password.')
