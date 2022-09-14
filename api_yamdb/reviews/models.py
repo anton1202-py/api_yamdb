@@ -1,6 +1,10 @@
 from django.db import models
+from django.core.validators import MaxValueValidator
+
+import datetime as dt
 from users.models import User
 
+year = dt.datetime.today().year
 
 SCORE_FOR_REVIEW = (
     (1, 1), (6, 6),
@@ -46,8 +50,12 @@ class Title(models.Model):
         blank=True
     )
     year = models.IntegerField(
-        verbose_name='Год выпуска'
-    )
+        verbose_name='Год выпуска', validators=[
+            MaxValueValidator(
+                limit_value=year,
+                message='Год превышает нынешний'
+            ),
+        ])
     genre = models.ManyToManyField(
         Genre,
         through='TitleGenre',
