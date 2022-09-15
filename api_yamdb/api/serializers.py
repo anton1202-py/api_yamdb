@@ -57,7 +57,6 @@ class ReviewSerializer(serializers.ModelSerializer):
                 'Невозможно оставить более одного отзыва'
             )
         return data
-        
 
     def validate_score(self, data):
         if not 1 <= data <= 10:
@@ -65,7 +64,6 @@ class ReviewSerializer(serializers.ModelSerializer):
                 'Вы можете поставить целую оценку от 1 до 10'
             )
         return data
-
 
 
 class CommentSerializer(serializers.ModelSerializer):

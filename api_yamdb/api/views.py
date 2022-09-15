@@ -16,7 +16,7 @@ from .serializers import (CategoriesSerializer, CommentSerializer,
 class ReviewViewSet(viewsets.ModelViewSet):
     queryset = Review.objects.all()
     serializer_class = ReviewSerializer
-    permission_classes = (AdminModerator,IsAuthenticatedOrReadOnly,)
+    permission_classes = (AdminModerator, IsAuthenticatedOrReadOnly,)
 
     def get_queryset(self):
         title_id = self.kwargs.get('title_id')
