@@ -2,9 +2,9 @@ import csv
 from django.conf import settings
 from django.core.management.base import BaseCommand
 
-from reviews.models import (Category, Comment, Genre, Review,
-                            Title, User)
-
+from reviews.models import (Category, Comment, Genre, TitleGenre, Review,
+                            Title)
+from users.models import User
 
 TABLES_DICT = {
     User: 'users.csv',
@@ -12,14 +12,14 @@ TABLES_DICT = {
     Genre: 'genre.csv',
     Title: 'titles.csv',
     Review: 'review.csv',
-    Comment: 'comments.csv'
-}
+    Comment: 'comments.csv',
+    TitleGenre: 'genre_title.csv'}
 
 
 class Command(BaseCommand):
-    help = 'Загрузите данные из csv файлов'
+    help = 'Load data from csv files'
 
-    def handle(self, *args, **options):
+    def handle(self, *args, **kwargs):
         for model, base in TABLES_DICT.items():
             with open(
                 f'{settings.BASE_DIR}/static/data/{base}',

@@ -1,13 +1,7 @@
+from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
+
 from users.models import User
-
-
-SCORE_FOR_REVIEW = (
-    (1, 1), (6, 6),
-    (2, 2), (7, 7),
-    (3, 3), (8, 8),
-    (4, 4), (9, 9),
-    (5, 5), (10, 10))
 
 
 class Category(models.Model):
@@ -89,9 +83,12 @@ class Review(models.Model):
         User, on_delete=models.CASCADE, related_name='reviews')
     text = models.TextField(
         verbose_name='Текст отзыва', help_text='Напишите отзыв')
-    score = models.IntegerField(
-        help_text='Оцените произведение',
-        choices=SCORE_FOR_REVIEW)
+    score = models.SmallIntegerField(
+        help_text='Оцените произведение от 1 до 10',
+        validators=[
+            MinValueValidator(1),
+            MaxValueValidator(10)
+        ])
     pub_date = models.DateTimeField('Дата публикации', auto_now_add=True)
 
     class Meta:
