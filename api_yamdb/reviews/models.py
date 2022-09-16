@@ -5,9 +5,6 @@ from django.db import models
 from users.models import User
 
 
-YEAR = dt.datetime.today().year
-
-
 class Category(models.Model):
     name = models.CharField(max_length=30, verbose_name='name')
     slug = models.SlugField(unique=True, verbose_name='slug')
@@ -44,12 +41,7 @@ class Title(models.Model):
         blank=True
     )
     year = models.IntegerField(
-        verbose_name='Год выпуска', validators=[
-            MaxValueValidator(
-                limit_value=YEAR,
-                message='Год превышает нынешний'
-            ),
-        ])
+        verbose_name='Год выпуска')
     genre = models.ManyToManyField(
         Genre,
         through='TitleGenre',
