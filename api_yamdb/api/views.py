@@ -56,7 +56,10 @@ class GenreViewSet(mixins.ListModelMixin,
     search_fields = ('name',)
 
 
-class CategoriesViewSet(viewsets.ModelViewSet):
+class CategoriesViewSet(mixins.ListModelMixin,
+                        mixins.CreateModelMixin,
+                        mixins.DestroyModelMixin,
+                        viewsets.GenericViewSet):
     queryset = Category.objects.all()
     lookup_field = 'slug'
     serializer_class = CategoriesSerializer
@@ -64,12 +67,6 @@ class CategoriesViewSet(viewsets.ModelViewSet):
 
     filter_backends = [filters.SearchFilter]
     search_fields = ('name',)
-
-    def retrieve(self, request, *args, **kwargs):
-        return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
-
-    def update(self, request, *args, **kwargs):
-        return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
 
 class TitleViewSet(viewsets.ModelViewSet):
