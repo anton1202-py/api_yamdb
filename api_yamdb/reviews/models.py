@@ -5,7 +5,7 @@ from django.db import models
 from users.models import User
 
 
-year = dt.datetime.today().year
+YEAR = dt.datetime.today().year
 
 
 class Category(models.Model):
@@ -46,7 +46,7 @@ class Title(models.Model):
     year = models.IntegerField(
         verbose_name='Год выпуска', validators=[
             MaxValueValidator(
-                limit_value=year,
+                limit_value=YEAR,
                 message='Год превышает нынешний'
             ),
         ])

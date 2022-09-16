@@ -50,18 +50,10 @@ class ReviewSerializer(serializers.ModelSerializer):
         author = request.user
         title_id = self.context['view'].kwargs.get('title_id')
         title = get_object_or_404(Title, id=title_id)
-        if request.method != 'POST':
-            return data
-        if Review.objects.filter(title=title, author=author).exists():
+        if request.method == 'POST' and Review.objects.filter(
+                title=title, author=author).exists():
             raise serializers.ValidationError(
                 'Невозможно оставить более одного отзыва'
-            )
-        return data
-
-    def validate_score(self, data):
-        if not 1 <= data <= 10:
-            raise serializers.ValidationError(
-                'Вы можете поставить целую оценку от 1 до 10'
             )
         return data
 
