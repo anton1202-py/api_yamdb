@@ -1,4 +1,5 @@
 from rest_framework import serializers
+from rest_framework.validators import UniqueTogetherValidator
 
 from .models import User
 
@@ -8,9 +9,15 @@ class RegistrationSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ['email', 'username']
+        validators = [UniqueTogetherValidator(queryset=User.objects.all(),
+                                              fields=['username', 'email'])]
 
-    def create(self, validated_data):
-        return User.objects.create_user(**validated_data)
+    def validate_username(self, value):
+        if value == 'me':
+            raise serializers.ValidationError(
+                'Имя пользователя "me" не разрешено.'
+            )
+        return value
 
 
 class AuthentificationSerializer(serializers.ModelSerializer):
@@ -33,6 +40,13 @@ class UserSerializer(serializers.ModelSerializer):
                   'last_name',
                   'bio',
                   'role']
+
+    def validate_role(self, value):
+        if value not in ['user', 'moderator', 'admin']:
+            raise serializers.ValidationError(
+                'Роль должна быть user, moderator или admin'
+            )
+        return value
 
 
 class AdminUserSerializer(serializers.ModelSerializer):
