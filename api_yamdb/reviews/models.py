@@ -6,12 +6,7 @@ from django.db import models
 from users.models import User
 
 
-def validate_max_year(year_user):
-    year = dt.datetime.today().year
-    if year_user > year:
-        raise ValidationError(
-            'Год превышает нынешний'
-        )
+YEAR = dt.datetime.today().year
 
 
 class Category(models.Model):
@@ -50,7 +45,12 @@ class Title(models.Model):
         blank=True
     )
     year = models.IntegerField(
-        verbose_name='Год выпуска', validators=[validate_max_year])
+        verbose_name='Год выпуска', validators=[
+            MaxValueValidator(
+                limit_value=YEAR,
+                message='Год превышает нынешний'
+            ),
+        ])
     genre = models.ManyToManyField(
         Genre,
         through='TitleGenre',
