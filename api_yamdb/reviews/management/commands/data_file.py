@@ -17,7 +17,7 @@ TABLES_DICT = {
 
 
 class Command(BaseCommand):
-    help = 'Load data from csv files'
+    help = 'Загрузка данных из csv файлов'
 
     def handle(self, *args, **kwargs):
         for model, base in TABLES_DICT.items():
@@ -28,4 +28,4 @@ class Command(BaseCommand):
                 reader = csv.DictReader(csv_file)
                 model.objects.bulk_create(model(**data) for data in reader)
 
-        self.stdout.write(self.style.SUCCESS('Successfully load data'))
+        self.stdout.write(self.style.SUCCESS('Данные успешно загружены'))
