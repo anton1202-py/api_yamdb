@@ -23,18 +23,12 @@ class UserViewSet(viewsets.ModelViewSet):
 @api_view(['POST'])
 @permission_classes([AllowAny])
 def signup_view(request):
-    username = request.data.get('username')
-    email = request.data.get('email')
     serializer = RegistrationSerializer(data=request.data)
-    if User.objects.filter(username=username, email=email).exists():
-        user = User.objects.get(username=username, email=email)
-        serializer.is_valid(raise_exception=False)
-    else:
-        serializer.is_valid(raise_exception=True)
-        username = serializer.validated_data.get('username')
-        email = serializer.validated_data.get('email')
-        user, _ = User.objects.get_or_create(username=username,
-                                             email=email)
+    serializer.is_valid(raise_exception=True)
+    username = serializer.validated_data.get('username')
+    email = serializer.validated_data.get('email')
+    user, _ = User.objects.get_or_create(username=username,
+                                         email=email)
     code = default_token_generator.make_token(user)
     try:
         send_mail(
