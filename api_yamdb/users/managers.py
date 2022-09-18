@@ -3,12 +3,7 @@ from django.contrib.auth.models import BaseUserManager
 
 
 class UserManager(BaseUserManager):
-    def create_user(self, username, email, role, bio, password=None):
-        if username is None:
-            raise TypeError('Users must have a username.')
-
-        if email is None:
-            raise TypeError('Users must have an email address.')
+    def create_user(self, username, email, bio, password=None, role='user'):
         user = self.model(username=username,
                           email=self.normalize_email(email),
                           role=role,

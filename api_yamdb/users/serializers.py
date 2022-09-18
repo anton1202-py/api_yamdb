@@ -1,23 +1,32 @@
 from rest_framework import serializers
-from rest_framework.validators import UniqueTogetherValidator
 
 from .models import User
 
 
-class RegistrationSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = User
-        fields = ['email', 'username']
-        validators = [UniqueTogetherValidator(queryset=User.objects.all(),
-                                              fields=['username', 'email'])]
+class RegistrationSerializer(serializers.Serializer):
+    username = serializers.CharField(max_length=255)
+    email = serializers.EmailField()
 
     def validate_username(self, value):
-        if value == 'me':
+        if value.lower() == 'me':
             raise serializers.ValidationError(
-                'Имя пользователя "me" не разрешено.'
+                'Имя пользователя ' + value + '  не разрешено.'
             )
         return value
+
+    def validate(self, data):
+        if User.objects.filter(username=data['username'],
+                               email=data['email']).exists():
+            return data
+        if User.objects.filter(username=data['username']).exists():
+            raise serializers.ValidationError(
+                'Пользователь с таким имененем существует'
+            )
+        if User.objects.filter(email=data['email']).exists():
+            raise serializers.ValidationError(
+                'Пользователь с таким email существует'
+            )
+        return data
 
 
 class AuthentificationSerializer(serializers.ModelSerializer):
